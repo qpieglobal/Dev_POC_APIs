@@ -1,0 +1,25 @@
+name: 'Poc workflow'
+
+# **What it does**: checks the files pushed into main branch and prints the files recently modified.
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  check-out-files:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Print file names modified recently
+        run: |
+          cd ${GITHUB_WORKSPACE}
+          for rec in `find ./ -name "*"`
+          do
+          echo ${rec}
+          done
