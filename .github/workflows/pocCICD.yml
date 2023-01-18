@@ -16,6 +16,8 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
       - name: Print file names modified recently
         run: |
           cd ${GITHUB_WORKSPACE}
