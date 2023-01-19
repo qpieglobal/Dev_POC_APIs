@@ -32,7 +32,7 @@ jobs:
           export var_il_list=
           for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
             echo "${file} was changed"
-            grep -i ".IL$" ${file} >/dev/null 2>/dev/null
+            echo ${file} | grep -i ".IL$"
             if [ $? -eq 0 ]; then
               export var_il_list=`echo ${var_il_list} ${file}`
             fi
@@ -40,6 +40,7 @@ jobs:
           
       - name: Validate script names in IL files
         run: |
+          echo "IL LIST: ${var_il_list}"
           for il in ${var_il_list}
           do
             export err=0
@@ -52,6 +53,7 @@ jobs:
               fi
             done
            done
+           echo "err: ${err}"
            if [ ${err} -gt 0 ]; then
              echo "Errors while validating IL files"
              exit 1
