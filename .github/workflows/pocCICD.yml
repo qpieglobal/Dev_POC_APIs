@@ -89,6 +89,7 @@ jobs:
                 echo "Error while creating ${tar_name}"
                 exit 1
               fi
+             done
              echo "Builds created successfully: ${builds}"
            else
              echo "Skipping build creation..."
