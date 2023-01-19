@@ -28,6 +28,7 @@ jobs:
         uses: tj-actions/changed-files@v35
 
       - name: List all added/modified IL files
+        shell: bash
         run: |
           export var_il_list=
           for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
