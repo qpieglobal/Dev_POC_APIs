@@ -28,7 +28,7 @@ jobs:
         uses: tj-actions/changed-files@v35
 
       - name: List all added/modified IL files
-        shell: bash
+      - shell: bash
         run: |
           echo "1"
           export var_il_list=
