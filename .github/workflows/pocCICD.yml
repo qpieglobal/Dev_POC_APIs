@@ -6,9 +6,13 @@ on:
   push:
     branches:
       - main
+    paths:
+      - src/instructions/**.IL
   pull_request:
     branches:
       - main
+    paths:
+      - src/instructions/**.IL
 
 jobs:
   check-out-files:
@@ -23,8 +27,52 @@ jobs:
         id: changed-files
         uses: tj-actions/changed-files@v35
 
-      - name: List all changed files
+      - name: List all added/modified IL files
         run: |
+          var_il_list=
           for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
             echo "${file} was changed"
+            grep -i ".IL$" $rec >/dev/null 2>/dev/null
+            var_il_list=`echo ${var_il_list} ${file}`
           done
+          
+      - name: Validate script names in IL files
+        run: |
+          for il in ${var_il_list}
+          do
+            err=0
+            for fname in ${il}
+            do
+              var_file=`echo ${fname} | awk -F: '{print $2}'`
+              if [ `ls ${var_file} | wc -l` -eq 0 ]; then
+               echo ${il}: ${var_file} does not exists
+               err=`expr ${err} + 1`
+              fi
+            done
+           done
+           if [ ${err} -gt 0 ]; then
+             echo "Errors while validating IL files"
+             exit 1
+           fi
+          echo "IL validation completed successfully..."
+          
+      - name: Create build for each IL
+        run: |
+          builds=
+          for j in ${var_il_list}
+          do
+            tar_name=`echo ${j} | awk -F. '{print $1}'`.tar
+            for f1 in ${il}
+            do
+              var_file=`echo ${fname} | awk -F: '{print $2}'`
+              var_files=`echo ${var_files} ${var_file}`
+            done
+            tar -cf ${tar_name} ${var_files}
+            if [ $? -eq 0 ]; then
+              builds=`echo ${builds} ${tar_name}`
+            else
+              echo "Error while creating ${tar_name}"
+              exit 1
+            fi
+           echo "Builds created successfully: ${builds}"
+        
