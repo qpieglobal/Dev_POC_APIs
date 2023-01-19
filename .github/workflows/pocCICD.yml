@@ -7,12 +7,12 @@ on:
     branches:
       - main
     paths:
-      - src/instructions/**.IL
+      - Dev_POC_APIs/src/instructions/**.IL
   pull_request:
     branches:
       - main
     paths:
-      - src/instructions/**.IL
+      - Dev_POC_APIs/src/instructions/**.IL
 
 jobs:
   check-out-files:
