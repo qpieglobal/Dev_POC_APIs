@@ -7,12 +7,12 @@ on:
     branches:
       - main
     paths:
-      - 'instructions/**.IL'
+      - '**.IL'
   pull_request:
     branches:
       - main
     paths:
-      - 'instructions/**.IL'
+      - '**.IL'
 
 jobs:
   check-out-files:
