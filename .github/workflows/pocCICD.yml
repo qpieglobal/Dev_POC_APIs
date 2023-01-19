@@ -30,14 +30,19 @@ jobs:
       - name: List all added/modified IL files
         shell: bash
         run: |
+          echo "1"
           export var_il_list=
+          echo "2"
           for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
             echo "${file} was changed"
             echo ${file} | grep -i ".IL$"
             if [ $? -eq 0 ]; then
+              echo "3"
               export var_il_list=`echo ${var_il_list} ${file}`
             fi
+            echo "4"
           done
+          echo ${var_il_list}
           
       - name: Validate script names in IL files
         run: |
