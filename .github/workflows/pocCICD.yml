@@ -70,6 +70,7 @@ jobs:
           fi
           
       - name: Create build for each IL
+        shell: bash
         run: |
           var_il_list=`echo ${{ steps.list-IL-files.outputs.il_list }}`
           export builds=
@@ -88,6 +89,7 @@ jobs:
               done
               cd ${GITHUB_WORKSPACE}
               echo "working on tar creation for ${tar_name}..."
+              echo ${var_files}
               tar -cvf ${tar_name} ${var_files}
               if [ $? -eq 0 ]; then
                 export builds=`echo ${builds} ${tar_name}`
