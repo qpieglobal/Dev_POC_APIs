@@ -43,21 +43,31 @@ jobs:
           
       - name: Validate script names in IL files
         run: |
+          echo "1"
           var_il_list=${{ steps.list-IL-files.outputs.il_list }}
+          echo "2"
           echo "IL LIST: ${var_il_list}"
+          echo "3"
           if [ "${var_il_list}" != "" ]; then
+            echo "4"
             for il in ${var_il_list}
             do
+              echo "5"
               export err=0
               for fname in ${il}
               do
+                echo "6"
                 var_file=`echo ${fname} | awk -F: '{print $2}'`
+                echo "7"
                 if [ `ls ${GITHUB_WORKSPACE}/${var_file} | wc -l` -eq 0 ]; then
+                 echo "8"
                  echo ${il}: ${var_file} does not exists
                  export err=`expr ${err} + 1`
                 fi
+                echo "9"
               done
              done
+             echo "10"
              echo "err: ${err}"
              if [ "${err}" = "0" ]; then
                echo "IL validation completed successfully..."
