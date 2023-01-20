@@ -31,25 +31,20 @@ jobs:
         #shell: bash
         id: list-IL-files
         run: |
-          echo "1"
           export var_il_list=
-          echo "2"
           for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
-            echo "${file} was changed"
+          #  echo "${file} was changed"
             if [ "`echo ${file} | rev | cut -c 1-3 | rev`" = ".IL" ]; then
-             echo "3"
               export var_il_list=`echo ${var_il_list} ${file}`
             fi
-            echo "4"
           done
           echo ${var_il_list}
-          exit "src/instructions/test2.IL"
         env:
-          text: ${{ steps.list-IL-files.outputs.text }}
+          output: ${{ steps.list-IL-files.outputs.output }}
           
       - name: Validate script names in IL files
         run: |
-          var_il_list=${{ steps.list-IL-files.outputs.text }}
+          var_il_list=${{ steps.list-IL-files.outputs.output }}
           echo "IL LIST: ${var_il_list}"
           if [ "${var_il_list}" != "" ]; then
             for il in ${var_il_list}
@@ -77,7 +72,7 @@ jobs:
           
       - name: Create build for each IL
         run: |
-          var_il_list=${{ steps.list-IL-files.outputs.var_il_list }}
+          var_il_list=${{ steps.list-IL-files.outputs.output }}
           export builds=
           if [ "${var_il_list}" != "" ]; then
             for j in ${var_il_list}
