@@ -6,13 +6,13 @@ on:
   push:
     branches:
       - main
-   # paths:
-   #   - '**IL'
+    paths:
+      '**IL'
   pull_request:
     branches:
       - main
-    #paths:
-    #  - '**IL'
+    paths:
+      '**IL'
 
 jobs:
   check-out-files:
@@ -78,6 +78,7 @@ jobs:
             for j in ${var_il_list}
             do
               tar_name=${tar_dir}/`echo ${j} | awk -F. '{print $1}'`.tar
+              chmod 754 ${GITHUB_WORKSPACE}/${j}
               for f1 in ${il}
               do
                 var_file=${GITHUB_WORKSPACE}/`echo ${fname} | awk -F: '{print $2}'`
