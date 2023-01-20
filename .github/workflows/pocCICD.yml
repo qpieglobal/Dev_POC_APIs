@@ -49,6 +49,7 @@ jobs:
             for il in ${var_il_list}
             do
               export err=0
+              echo ${il}:
               for fname in ${il}
               do
                 var_file=`echo ${fname} | awk -F: '{print $2}'`
@@ -56,6 +57,7 @@ jobs:
                  echo ${il}: ${var_file} does not exists
                  export err=`expr ${err} + 1`
                 fi
+                ls -ltr ${GITHUB_WORKSPACE}/${var_file}
               done
              done
              echo "err: ${err}"
@@ -74,6 +76,7 @@ jobs:
         run: |
           var_il_list=`echo ${{ steps.list-IL-files.outputs.il_list }}`
           export builds=
+          export var_files=
           mkdir ~/builds
           tar_dir=~/builds
           if [ "${var_il_list}" != "" ]; then
@@ -84,7 +87,9 @@ jobs:
               ls -ltr ${j}
               for fname in ${j}
               do
+                echo ${fname}
                 var_file=`echo ${fname} | awk -F: '{print $2}'`
+                echo ${var_file}
                 export var_files=`echo ${var_files} ${var_file}`
               done
               cd ${GITHUB_WORKSPACE}
