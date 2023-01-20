@@ -35,16 +35,14 @@ jobs:
           for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
           #  echo "${file} was changed"
             if [ "`echo ${file} | rev | cut -c 1-3 | rev`" = ".IL" ]; then
-              export var_il_list=`echo ${var_il_list} ${file}`
+              export var_il_list=`echo ${var_il_list} ${GITHUB_WORKSPACE}/${file}`
             fi
           done
-          echo ${var_il_list}
-        env:
-          output: ${{ steps.list-IL-files.outputs.output }}
+          echo il_list=${var_il_list} >> $GITHUB_OUTPUT
           
       - name: Validate script names in IL files
         run: |
-          var_il_list=${{ steps.list-IL-files.outputs.output }}
+          var_il_list=${{ steps.list-IL-files.outputs.il_list }}
           echo "IL LIST: ${var_il_list}"
           if [ "${var_il_list}" != "" ]; then
             for il in ${var_il_list}
@@ -53,7 +51,7 @@ jobs:
               for fname in ${il}
               do
                 var_file=`echo ${fname} | awk -F: '{print $2}'`
-                if [ `ls ${var_file} | wc -l` -eq 0 ]; then
+                if [ `ls ${GITHUB_WORKSPACE}/${var_file} | wc -l` -eq 0 ]; then
                  echo ${il}: ${var_file} does not exists
                  export err=`expr ${err} + 1`
                 fi
@@ -72,15 +70,17 @@ jobs:
           
       - name: Create build for each IL
         run: |
-          var_il_list=${{ steps.list-IL-files.outputs.output }}
+          var_il_list=${{ steps.list-IL-files.outputs.il_list }}
           export builds=
+          mkdir ~/builds/tar
+          tar_dir=~/builds/tar
           if [ "${var_il_list}" != "" ]; then
             for j in ${var_il_list}
             do
-              tar_name=`echo ${j} | awk -F. '{print $1}'`.tar
+              tar_name=${tar_dir}/`echo ${j} | awk -F. '{print $1}'`.tar
               for f1 in ${il}
               do
-                var_file=`echo ${fname} | awk -F: '{print $2}'`
+                var_file=${GITHUB_WORKSPACE}/`echo ${fname} | awk -F: '{print $2}'`
                 export var_files=`echo ${var_files} ${var_file}`
               done
               tar -cf ${tar_name} ${var_files}
@@ -92,6 +92,7 @@ jobs:
               fi
              done
              echo "Builds created successfully: ${builds}"
+             ls -ltr ${tar_dir}
            else
              echo "Skipping build creation..."
            fi
