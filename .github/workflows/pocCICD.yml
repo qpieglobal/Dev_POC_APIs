@@ -78,14 +78,15 @@ jobs:
           if [ "${var_il_list}" != "" ]; then
             for j in ${var_il_list}
             do
-              tar_name=${tar_dir}/`echo ${j} | awk -F. '{print $1}'`.tar
-              chmod 777 ${GITHUB_WORKSPACE}/${j}
-              ls -ltr ${GITHUB_WORKSPACE}/${j}
+              tar_name=${tar_dir}/`echo ${j} | rev | awk -F/ '{print $1}' | rev | awk -F. '{print $1}'`.tar
+              chmod 777 ${j}
+              ls -ltr ${j}
               for fname in ${j}
               do
-                var_file=${GITHUB_WORKSPACE}/`echo ${fname} | awk -F: '{print $2}'`
+                var_file=`echo ${fname} | awk -F: '{print $2}'`
                 export var_files=`echo ${var_files} ${var_file}`
               done
+              cd ${GITHUB_WORKSPACE}
               tar -cf ${tar_name} ${var_files}
               if [ $? -eq 0 ]; then
                 export builds=`echo ${builds} ${tar_name}`
