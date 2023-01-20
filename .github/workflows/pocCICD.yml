@@ -29,6 +29,7 @@ jobs:
 
       - name: List all added/modified IL files
         #shell: bash
+        id: list-IL-files
         run: |
           echo "1"
           export var_il_list=
@@ -42,9 +43,12 @@ jobs:
             echo "4"
           done
           echo ${var_il_list}
+        env:
+          var_il_list: ${{ steps.list-IL-files.outputs.var_il_list }}
           
       - name: Validate script names in IL files
         run: |
+          var_il_list=${{ steps.list-IL-files.outputs.var_il_list }}
           echo "IL LIST: ${var_il_list}"
           if [ "${var_il_list}" != "" ]; then
             for il in ${var_il_list}
@@ -72,6 +76,7 @@ jobs:
           
       - name: Create build for each IL
         run: |
+          var_il_list=${{ steps.list-IL-files.outputs.var_il_list }}
           export builds=
           if [ "${var_il_list}" != "" ]; then
             for j in ${var_il_list}
