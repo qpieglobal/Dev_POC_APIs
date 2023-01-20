@@ -43,31 +43,21 @@ jobs:
           
       - name: Validate script names in IL files
         run: |
-          echo "1"
           var_il_list=`echo ${{ steps.list-IL-files.outputs.il_list }}`
-          echo "2"
           echo "IL LIST: ${var_il_list}"
-          echo "3"
           if [ "${var_il_list}" != "" ]; then
-            echo "4"
             for il in ${var_il_list}
             do
-              echo "5"
               export err=0
               for fname in ${il}
               do
-                echo "6"
                 var_file=`echo ${fname} | awk -F: '{print $2}'`
-                echo "7"
                 if [ `ls ${GITHUB_WORKSPACE}/${var_file} | wc -l` -eq 0 ]; then
-                 echo "8"
                  echo ${il}: ${var_file} does not exists
                  export err=`expr ${err} + 1`
                 fi
-                echo "9"
               done
              done
-             echo "10"
              echo "err: ${err}"
              if [ "${err}" = "0" ]; then
                echo "IL validation completed successfully..."
@@ -81,7 +71,7 @@ jobs:
           
       - name: Create build for each IL
         run: |
-          var_il_list=${{ steps.list-IL-files.outputs.il_list }}
+          var_il_list=`echo ${{ steps.list-IL-files.outputs.il_list }}`
           export builds=
           mkdir ~/builds
           tar_dir=~/builds
@@ -91,7 +81,7 @@ jobs:
               tar_name=${tar_dir}/`echo ${j} | awk -F. '{print $1}'`.tar
               chmod 777 ${GITHUB_WORKSPACE}/${j}
               ls -ltr ${GITHUB_WORKSPACE}/${j}
-              for f1 in ${il}
+              for fname in ${j}
               do
                 var_file=${GITHUB_WORKSPACE}/`echo ${fname} | awk -F: '{print $2}'`
                 export var_files=`echo ${var_files} ${var_file}`
