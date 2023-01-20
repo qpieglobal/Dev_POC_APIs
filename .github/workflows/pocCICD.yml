@@ -44,11 +44,11 @@ jobs:
           done
           echo ${var_il_list}
         env:
-          var_il_list: ${{ steps.list-IL-files.outputs.var_il_list }}
+          text: ${{ steps.list-IL-files.outputs.text }}
           
       - name: Validate script names in IL files
         run: |
-          var_il_list=${{ steps.list-IL-files.outputs.var_il_list }}
+          var_il_list=${{ steps.list-IL-files.outputs.text }}
           echo "IL LIST: ${var_il_list}"
           if [ "${var_il_list}" != "" ]; then
             for il in ${var_il_list}
