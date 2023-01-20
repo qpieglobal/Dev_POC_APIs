@@ -87,7 +87,8 @@ jobs:
                 export var_files=`echo ${var_files} ${var_file}`
               done
               cd ${GITHUB_WORKSPACE}
-              tar -cf ${tar_name} ${var_files}
+              echo "working on tar creation for ${tar_name}..."
+              tar -cvf ${tar_name} ${var_files}
               if [ $? -eq 0 ]; then
                 export builds=`echo ${builds} ${tar_name}`
               else
