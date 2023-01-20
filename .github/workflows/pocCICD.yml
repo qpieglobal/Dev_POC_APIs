@@ -34,6 +34,7 @@ jobs:
           export var_il_list=
           for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
             echo "${file} was changed"
+            ls -ltr ${GITHUB_WORKSPACE}/${file}
             if [ "`echo ${file} | rev | cut -c 1-3 | rev`" = ".IL" ]; then
               export var_il_list=`echo ${var_il_list} ${GITHUB_WORKSPACE}/${file}`
             fi
@@ -78,7 +79,8 @@ jobs:
             for j in ${var_il_list}
             do
               tar_name=${tar_dir}/`echo ${j} | awk -F. '{print $1}'`.tar
-              chmod 754 ${GITHUB_WORKSPACE}/${j}
+              chmod 777 ${GITHUB_WORKSPACE}/${j}
+              ls -ltr ${GITHUB_WORKSPACE}/${j}
               for f1 in ${il}
               do
                 var_file=${GITHUB_WORKSPACE}/`echo ${fname} | awk -F: '{print $2}'`
