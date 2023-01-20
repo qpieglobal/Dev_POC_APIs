@@ -50,15 +50,26 @@ jobs:
             do
               export err=0
               echo ${il}:
-              for fname in ${il}
-              do
+              while IFS= read -r fname || [[ -n $fname ]]
+              do 
                 var_file=`echo ${fname} | awk -F: '{print $2}'`
                 if [ `ls ${GITHUB_WORKSPACE}/${var_file} | wc -l` -eq 0 ]; then
                  echo ${il}: ${var_file} does not exists
                  export err=`expr ${err} + 1`
                 fi
                 ls -ltr ${GITHUB_WORKSPACE}/${var_file}
-              done
+              done <${il}
+              
+              #for fname in ${il}
+              #do
+              #  var_file=`echo ${fname} | awk -F: '{print $2}'`
+              #  if [ `ls ${GITHUB_WORKSPACE}/${var_file} | wc -l` -eq 0 ]; then
+              #   echo ${il}: ${var_file} does not exists
+              #   export err=`expr ${err} + 1`
+              #  fi
+              #  ls -ltr ${GITHUB_WORKSPACE}/${var_file}
+              #done
+              
              done
              echo "err: ${err}"
              if [ "${err}" = "0" ]; then
@@ -85,13 +96,23 @@ jobs:
               tar_name=${tar_dir}/`echo ${j} | rev | awk -F/ '{print $1}' | rev | awk -F. '{print $1}'`.tar
               chmod 777 ${j}
               ls -ltr ${j}
-              for fname in ${j}
-              do
+              
+              while IFS= read -r fname || [[ -n $fname ]]
+              do 
                 echo ${fname}
                 var_file=`echo ${fname} | awk -F: '{print $2}'`
                 echo ${var_file}
                 export var_files=`echo ${var_files} ${var_file}`
-              done
+              done <${j}
+              
+              #for fname in ${j}
+              #do
+              #  echo ${fname}
+              #  var_file=`echo ${fname} | awk -F: '{print $2}'`
+              #  echo ${var_file}
+              #  export var_files=`echo ${var_files} ${var_file}`
+              #done
+              
               cd ${GITHUB_WORKSPACE}
               echo "working on tar creation for ${tar_name}..."
               echo "var_files: ${var_files}"
