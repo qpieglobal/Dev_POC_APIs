@@ -43,6 +43,7 @@ jobs:
             echo "4"
           done
           echo ${var_il_list}
+          exit "src/instructions/test2.IL"
         env:
           text: ${{ steps.list-IL-files.outputs.text }}
           
