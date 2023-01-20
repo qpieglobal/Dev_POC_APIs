@@ -33,7 +33,7 @@ jobs:
         run: |
           export var_il_list=
           for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
-          #  echo "${file} was changed"
+            echo "${file} was changed"
             if [ "`echo ${file} | rev | cut -c 1-3 | rev`" = ".IL" ]; then
               export var_il_list=`echo ${var_il_list} ${GITHUB_WORKSPACE}/${file}`
             fi
@@ -72,8 +72,8 @@ jobs:
         run: |
           var_il_list=${{ steps.list-IL-files.outputs.il_list }}
           export builds=
-          mkdir ~/builds/tar
-          tar_dir=~/builds/tar
+          mkdir ~/builds
+          tar_dir=~/builds
           if [ "${var_il_list}" != "" ]; then
             for j in ${var_il_list}
             do
