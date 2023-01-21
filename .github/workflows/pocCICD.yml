@@ -92,6 +92,8 @@ jobs:
           export var_files=
           mkdir ~/builds
           tar_dir=~/builds
+          echo "cat ~/temp_var.txt:"
+          cat ~/temp_var.txt
           if [ "${var_il_list}" != "" ]; then
            # for j in ${var_il_list}
            # do
@@ -120,7 +122,6 @@ jobs:
               eval "tr_param2= $tr_param"
               echo "tr_param2: $tr_param2"
               
-              #tar -cvf ${tar_dir}/${{steps.validate-ILs.outputs.tar_${rec}_name}} ${{steps.validate-ILs.outputs.il_${rec}_files_list}}
               if [ $? -eq 0 ]; then
                 export builds=`echo ${builds} ${tar_name}`
               else
