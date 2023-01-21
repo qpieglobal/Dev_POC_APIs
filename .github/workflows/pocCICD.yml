@@ -118,7 +118,9 @@ jobs:
             for rec in `seq 1 ${il_cnt}`
             do
               echo "var_files: ${var_files}"
-              tar -cvf ${tar_dir}/${tar_${rec}_name} ${il_${rec}_files_list}
+              eval "tar_name=\${tar_${rec}_name}"
+              eval 'files="\${il_${rec}_files_list}"'
+              tar -cvf ${tar_dir}/${tar_name} ${files}
               if [ $? -eq 0 ]; then
                 export builds=`echo ${builds} ${tar_name}`
               else
