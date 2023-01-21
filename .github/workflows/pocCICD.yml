@@ -120,7 +120,7 @@ jobs:
               echo "var_files: ${var_files}"
               eval "tr_name=\${tr_${rec}_name}"
               eval 'files="\${il_${rec}_files_list}"'
-              tar -cvf ${tar_dir}/${tr_name} ${files}
+              echo "tar -cvf ${tar_dir}/${tr_name} ${files}"
               if [ $? -eq 0 ]; then
                 export builds=`echo ${builds} ${tar_name}`
               else
