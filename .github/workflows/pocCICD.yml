@@ -118,8 +118,9 @@ jobs:
             for rec in `seq 1 ${il_cnt}`
             do
               echo "var_files: ${var_files}"
-              eval "tr_name=\${tr_${rec}_name}"
-              eval 'files=\"\${il_${rec}_files_list}\"'
+              echo "tr_1_name: ${tr_1_name}"
+              eval "echo tr_name=\${tr_${rec}_name}"
+              eval 'echo files=\"\${il_${rec}_files_list}\"'
               echo "tar -cvf ${tar_dir}/${tr_name} ${files}"
               eval "tar -cvf ${tar_dir}/${tr_name} ${files}"
               if [ $? -eq 0 ]; then
