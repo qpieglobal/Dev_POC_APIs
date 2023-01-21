@@ -108,11 +108,13 @@ jobs:
                             
               cd ${GITHUB_WORKSPACE}
               echo "working on tar creation for ${tar_name}..."
-            for rec in (seq 1 ${{steps.validate-ILs.outputs.il_cnt}})
+            for rec in `seq 1 ${{steps.validate-ILs.outputs.il_cnt}}`
             do
               echo "var_files: ${var_files}"
-              eval "tr_param=\${{steps.validate-ILs.outputs.tar_${rec}_name}}"
-              eval "files_param=\${{steps.validate-ILs.outputs.il_${rec}_files_list}}"
+              p1=steps.validate-ILs.outputs.tar_${rec}_name
+              p2=steps.validate-ILs.outputs.il_${rec}_files_list
+              eval "tr_param=\${{$p1}}"
+              eval "files_param=\${{$p2}}"
               echo "tr_param: $tr_param"
               echo "files_param: $files_param"
               
