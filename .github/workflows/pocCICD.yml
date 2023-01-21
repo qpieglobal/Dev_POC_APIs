@@ -68,7 +68,7 @@ jobs:
               
               echo il_${il_cnt}_name=${il} > ~/temp_var.txt
               echo tar_${il_cnt}_name=`echo ${il} | rev | awk -F/ '{print $1}' | rev | awk -F. '{print $1}'`.tar >> ~/temp_var.txt
-              echo il_${il_cnt}_files_list=${var_files} >> ~/temp_var.txt
+              echo il_${il_cnt}_files_list=\"${var_files}\" >> ~/temp_var.txt
               
              done
              echo il_cnt=${il_cnt} >> $GITHUB_OUTPUT
@@ -122,6 +122,7 @@ jobs:
               eval "echo tar_${rec}_name: \${tar_${rec}_name}"
               eval "echo il_${rec}_files_list: \${il_${rec}_files_list}"
               
+              eval "tar -cvf ${tar_dir}/\${tar_${rec}_name} \${il_${rec}_files_list}"
               if [ $? -eq 0 ]; then
                 export builds=`echo ${builds} ${tar_name}`
               else
