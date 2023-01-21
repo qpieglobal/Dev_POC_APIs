@@ -63,19 +63,14 @@ jobs:
                 ls -ltr ${GITHUB_WORKSPACE}/${var_file}
                 var_files=`echo ${var_files} ${var_file}`
               done <${il}
-              
-              if [ `ls ~/tmp_il_vars.sh | wc -l` -gt 0 ]; then
-               rm ~/tmp_il_vars.sh
-              fi
-             il_cnt=`expr $il_cnt + 1`
-              ### set env valiables for each IL file ####
-              echo export il_${il_cnt}_name=\"${il}\" >> ~/tmp_il_vars.sh
-              tar_name=`echo ${il} | rev | awk -F/ '{print $1}' | rev | awk -F. '{print $1}'`.tar
-              echo export tr_${il_cnt}_name=\"${tar_name}\" >> ~/tmp_il_vars.sh
-              echo export il_${il_cnt}_files_list=\"${var_files}\" >> ~/tmp_il_vars.sh
+              il_cnt=`expr $il_cnt + 1`
+              ### set output valiables for each IL file ####
+              echo il_cnt=${il_cnt} >> $GITHUB_OUTPUT
+              echo il_${il_cnt}_name=${il} >> $GITHUB_OUTPUT
+              echo tar_${il_cnt}_name=`echo ${il} | rev | awk -F/ '{print $1}' | rev | awk -F. '{print $1}'`.tar >> $GITHUB_OUTPUT
+              echo il_${il_cnt}_files_list=${var_files} >> $GITHUB_OUTPUT
               
              done
-             echo "export il_cnt=${il_cnt}" >> ~/tmp_il_vars.sh
              echo "err: ${err}"
              if [ "${err}" = "0" ]; then
                echo "IL validation completed successfully..."
@@ -83,7 +78,6 @@ jobs:
                echo "Errors while validating IL files"
                exit 1
              fi
-            cat ~/tmp_il_vars.sh 
           else
             echo "Skipping validation..."
           fi
@@ -114,16 +108,15 @@ jobs:
                             
               cd ${GITHUB_WORKSPACE}
               echo "working on tar creation for ${tar_name}..."
-              sh ~/tmp_il_vars.sh
-            for rec in `seq 1 ${il_cnt}`
+            for rec in (seq 1 ${{steps.validate-ILs.outputs.il_cnt}})
             do
               echo "var_files: ${var_files}"
-              echo "tr_1_name: ${tr_1_name}"
-              echo "il_1_files_list: ${il_1_files_list}"
-              eval "echo tr_name=\${tr_${rec}_name}"
-              eval 'echo files=\"\${il_${rec}_files_list}\"'
-              echo "tar -cvf ${tar_dir}/${tr_name} ${files}"
-              eval "tar -cvf ${tar_dir}/${tr_name} ${files}"
+              eval "tr_param=\${{steps.validate-ILs.outputs.tar_${rec}_name}}"
+              eval "files_param=\${{steps.validate-ILs.outputs.il_${rec}_files_list}}"
+              echo "tr_param: $tr_param"
+              echo "files_param: $files_param"
+              
+              #tar -cvf ${tar_dir}/${{steps.validate-ILs.outputs.tar_${rec}_name}} ${{steps.validate-ILs.outputs.il_${rec}_files_list}}
               if [ $? -eq 0 ]; then
                 export builds=`echo ${builds} ${tar_name}`
               else
