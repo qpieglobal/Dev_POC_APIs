@@ -115,7 +115,7 @@ jobs:
               cd ${GITHUB_WORKSPACE}
               echo "working on tar creation for ${tar_name}..."
               sh ~/tmp_il_vars.sh
-            for rec in (seq 1 ${il_cnt})
+            for rec in `seq 1 ${il_cnt}`
             do
               echo "var_files: ${var_files}"
               tar -cvf ${tar_dir}/${tar_${rec}_name} ${il_${rec}_files_list}
