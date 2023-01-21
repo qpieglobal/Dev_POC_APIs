@@ -69,9 +69,9 @@ jobs:
               fi
              il_cnt=`expr $il_cnt + 1`
               ### set env valiables for each IL file ####
-              echo "export il_${il_cnt}_name=${il}" >> ~/tmp_il_vars.sh
+              echo export il_${il_cnt}_name=\"${il}\" >> ~/tmp_il_vars.sh
               tar_name=`echo ${il} | rev | awk -F/ '{print $1}' | rev | awk -F. '{print $1}'`.tar
-              echo "export tr_${il_cnt}_name=${tar_name}" >> ~/tmp_il_vars.sh
+              echo export tr_${il_cnt}_name=\"${tar_name}\" >> ~/tmp_il_vars.sh
               echo export il_${il_cnt}_files_list=\"${var_files}\" >> ~/tmp_il_vars.sh
               
              done
@@ -119,6 +119,7 @@ jobs:
             do
               echo "var_files: ${var_files}"
               echo "tr_1_name: ${tr_1_name}"
+              echo "il_1_files_list: ${il_1_files_list}"
               eval "echo tr_name=\${tr_${rec}_name}"
               eval 'echo files=\"\${il_${rec}_files_list}\"'
               echo "tar -cvf ${tar_dir}/${tr_name} ${files}"
