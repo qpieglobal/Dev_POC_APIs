@@ -83,10 +83,10 @@ jobs:
                echo "Errors while validating IL files"
                exit 1
              fi
+            cat ~/tmp_il_vars.sh 
           else
             echo "Skipping validation..."
           fi
-          cat ~/tmp_il_vars.sh
           
       - name: Create build for each IL
         shell: bash
