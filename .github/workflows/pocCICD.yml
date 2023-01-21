@@ -48,6 +48,7 @@ jobs:
           echo "IL LIST: ${var_il_list}"
           if [ "${var_il_list}" != "" ]; then
             il_cnt=0
+            rm ~/temp_var.txt
             for il in ${var_il_list}
             do
               export err=0
@@ -66,7 +67,7 @@ jobs:
               il_cnt=`expr $il_cnt + 1`
               ### set output valiables for each IL file ####
               
-              echo il_${il_cnt}_name=${il} > ~/temp_var.txt
+              echo il_${il_cnt}_name=${il} >> ~/temp_var.txt
               echo tar_${il_cnt}_name=`echo ${il} | rev | awk -F/ '{print $1}' | rev | awk -F. '{print $1}'`.tar >> ~/temp_var.txt
               echo il_${il_cnt}_files_list=\"${var_files}\" >> ~/temp_var.txt
               
