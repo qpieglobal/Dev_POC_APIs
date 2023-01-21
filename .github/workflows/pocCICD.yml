@@ -86,6 +86,7 @@ jobs:
           else
             echo "Skipping validation..."
           fi
+          cat ~/tmp_il_vars.sh
           
       - name: Create build for each IL
         shell: bash
