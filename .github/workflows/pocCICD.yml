@@ -82,45 +82,45 @@ jobs:
             echo "Skipping validation..."
           fi
           
-     # - name: Create build for each IL
-     #   shell: bash
-     #   run: |
-     #     var_il_list=`echo ${{ steps.list-IL-files.outputs.il_list }}`
-     #     export builds=
-     #     export var_files=
-     #     mkdir ~/builds
-     #     tar_dir=~/builds
-     #     if [ "${var_il_list}" != "" ]; then
-     #      # for j in ${var_il_list}
-     #      # do
-     #      #   tar_name=${tar_dir}/`echo ${j} | rev | awk -F/ '{print $1}' | rev | awk -F. '{print $1}'`.tar
-     #      #   chmod 777 ${j}
-     #      #   ls -ltr ${j}
-     #      #   
-     #      #   while IFS= read -r fname || [[ -n $fname ]]
-     #      #   do 
-     #      #     echo ${fname}
-     #      #     var_file=`echo ${fname} | awk -F: '{print $2}'`
-     #      #     echo ${var_file}
-     #      #     export var_files=`echo ${var_files} ${var_file}`
-     #      #   done <${j}
-     #         
-     #                       
-     #         cd ${GITHUB_WORKSPACE}
-     #         echo "working on tar creation for ${tar_name}..."
-     #       for rec in (seq 1 ${{steps.validate-ILs.outputs.il_cnt}})
-     #       do
-     #         echo "var_files: ${var_files}"
-     #         tar -cvf ${tar_dir}/${{steps.validate-ILs.outputs.tar_${rec}_name}} ${{steps.validate-ILs.outputs.il_${rec}_files_list}}
-     #         if [ $? -eq 0 ]; then
-     #           export builds=`echo ${builds} ${tar_name}`
-     #         else
-     #           echo "Error while creating ${tar_name}"
-     #           exit 1
-     #         fi
-     #        done
-     #        echo "Builds created successfully: ${builds}"
-     #        ls -ltr ${tar_dir}
-     #      else
-     #        echo "Skipping build creation..."
-     #      fi
+      - name: Create build for each IL
+        shell: bash
+        run: |
+          var_il_list=`echo ${{ steps.list-IL-files.outputs.il_list }}`
+          export builds=
+          export var_files=
+          mkdir ~/builds
+          tar_dir=~/builds
+          if [ "${var_il_list}" != "" ]; then
+           # for j in ${var_il_list}
+           # do
+           #   tar_name=${tar_dir}/`echo ${j} | rev | awk -F/ '{print $1}' | rev | awk -F. '{print $1}'`.tar
+           #   chmod 777 ${j}
+           #   ls -ltr ${j}
+           #   
+           #   while IFS= read -r fname || [[ -n $fname ]]
+           #   do 
+           #     echo ${fname}
+           #     var_file=`echo ${fname} | awk -F: '{print $2}'`
+           #     echo ${var_file}
+           #     export var_files=`echo ${var_files} ${var_file}`
+           #   done <${j}
+              
+                            
+              cd ${GITHUB_WORKSPACE}
+              echo "working on tar creation for ${tar_name}..."
+            for rec in (seq 1 ${{steps.validate-ILs.outputs.il_cnt}})
+            do
+              echo "var_files: ${var_files}"
+              tar -cvf ${tar_dir}/${{steps.validate-ILs.outputs.tar_`${rec}`_name}} ${{steps.validate-ILs.outputs.il_`${rec}`_files_list}}
+              if [ $? -eq 0 ]; then
+                export builds=`echo ${builds} ${tar_name}`
+              else
+                echo "Error while creating ${tar_name}"
+                exit 1
+              fi
+             done
+             echo "Builds created successfully: ${builds}"
+             ls -ltr ${tar_dir}
+           else
+             echo "Skipping build creation..."
+           fi
