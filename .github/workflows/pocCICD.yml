@@ -48,7 +48,7 @@ jobs:
           echo "IL LIST: ${var_il_list}"
           if [ "${var_il_list}" != "" ]; then
             il_cnt=0
-            rm ~/temp_var.txt
+            echo "" > ~/temp_var.txt
             for il in ${var_il_list}
             do
               export err=0
