@@ -111,7 +111,7 @@ jobs:
             for rec in (seq 1 ${{steps.validate-ILs.outputs.il_cnt}})
             do
               echo "var_files: ${var_files}"
-              tar -cvf ${tar_dir}/`echo ${{steps.validate-ILs.outputs.tar_${rec}_name}} ${{steps.validate-ILs.outputs.il_${rec}_files_list}}`
+              tar -cvf ${tar_dir}/${{`echo steps.validate-ILs.outputs.tar_${rec}_name`}} ${{`echo steps.validate-ILs.outputs.il_${rec}_files_list`}}
               if [ $? -eq 0 ]; then
                 export builds=`echo ${builds} ${tar_name}`
               else
