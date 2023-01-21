@@ -64,19 +64,18 @@ jobs:
                 var_files=`echo ${var_files} ${var_file}`
               done <${il}
               
-			  if [ `ls ~/tmp_il_vars.sh | wc -l` -gt 0 ]; then
-                 rm ~/tmp_il_vars.sh
-                fi
-			  il_cnt=`expr $il_cnt + 1`
+              if [ `ls ~/tmp_il_vars.sh | wc -l` -gt 0 ]; then
+               rm ~/tmp_il_vars.sh
+              fi
+             il_cnt=`expr $il_cnt + 1`
               ### set env valiables for each IL file ####
               echo "export il_${il_cnt}_name=${il}" >> ~/tmp_il_vars.sh
-			  tar_name=`echo ${il} | rev | awk -F/ '{print $1}' | rev | awk -F. '{print $1}'`.tar
+              tar_name=`echo ${il} | rev | awk -F/ '{print $1}' | rev | awk -F. '{print $1}'`.tar
               echo "export tar_${il_cnt}_name=${tar_name}" >> ~/tmp_il_vars.sh
               echo "export il_${il_cnt}_files_list=${var_files}" >> ~/tmp_il_vars.sh
               
              done
-			 echo "export il_cnt=${il_cnt}" >> ~/tmp_il_vars.sh
-			 
+             echo "export il_cnt=${il_cnt}" >> ~/tmp_il_vars.sh
              echo "err: ${err}"
              if [ "${err}" = "0" ]; then
                echo "IL validation completed successfully..."
@@ -114,7 +113,7 @@ jobs:
                             
               cd ${GITHUB_WORKSPACE}
               echo "working on tar creation for ${tar_name}..."
-			sh ~/tmp_il_vars.sh
+              sh ~/tmp_il_vars.sh
             for rec in (seq 1 ${il_cnt})
             do
               echo "var_files: ${var_files}"
