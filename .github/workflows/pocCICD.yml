@@ -42,14 +42,17 @@ jobs:
           echo il_list=${var_il_list} >> $GITHUB_OUTPUT
           
       - name: Validate script names in IL files
+        id: validate-ILs
         run: |
           var_il_list=`echo ${{ steps.list-IL-files.outputs.il_list }}`
           echo "IL LIST: ${var_il_list}"
           if [ "${var_il_list}" != "" ]; then
+            il_cnt=0
             for il in ${var_il_list}
             do
               export err=0
               echo ${il}:
+              var_files=
               while IFS= read -r fname || [[ -n $fname ]]
               do 
                 var_file=`echo ${fname} | awk -F: '{print $2}'`
@@ -58,17 +61,14 @@ jobs:
                  export err=`expr ${err} + 1`
                 fi
                 ls -ltr ${GITHUB_WORKSPACE}/${var_file}
+                var_files=`echo ${var_files} ${var_file}`
               done <${il}
               
-              #for fname in ${il}
-              #do
-              #  var_file=`echo ${fname} | awk -F: '{print $2}'`
-              #  if [ `ls ${GITHUB_WORKSPACE}/${var_file} | wc -l` -eq 0 ]; then
-              #   echo ${il}: ${var_file} does not exists
-              #   export err=`expr ${err} + 1`
-              #  fi
-              #  ls -ltr ${GITHUB_WORKSPACE}/${var_file}
-              #done
+              ### set output valiables for each IL file ####
+              echo il_cnt=`expr $il_cnt + 1` >> $GITHUB_OUTPUT
+              echo il_${il_cnt}_name=${il} >> $GITHUB_OUTPUT
+              echo tar_${il_cnt}_name=`echo ${il} | rev | awk -F/ '{print $1}' | rev | awk -F. '{print $1}'`.tar >> $GITHUB_OUTPUT
+              echo il_${il_cnt}_files_list=${var_files} >> $GITHUB_OUTPUT
               
              done
              echo "err: ${err}"
@@ -91,32 +91,27 @@ jobs:
           mkdir ~/builds
           tar_dir=~/builds
           if [ "${var_il_list}" != "" ]; then
-            for j in ${var_il_list}
-            do
-              tar_name=${tar_dir}/`echo ${j} | rev | awk -F/ '{print $1}' | rev | awk -F. '{print $1}'`.tar
-              chmod 777 ${j}
-              ls -ltr ${j}
+           # for j in ${var_il_list}
+           # do
+           #   tar_name=${tar_dir}/`echo ${j} | rev | awk -F/ '{print $1}' | rev | awk -F. '{print $1}'`.tar
+           #   chmod 777 ${j}
+           #   ls -ltr ${j}
+           #   
+           #   while IFS= read -r fname || [[ -n $fname ]]
+           #   do 
+           #     echo ${fname}
+           #     var_file=`echo ${fname} | awk -F: '{print $2}'`
+           #     echo ${var_file}
+           #     export var_files=`echo ${var_files} ${var_file}`
+           #   done <${j}
               
-              while IFS= read -r fname || [[ -n $fname ]]
-              do 
-                echo ${fname}
-                var_file=`echo ${fname} | awk -F: '{print $2}'`
-                echo ${var_file}
-                export var_files=`echo ${var_files} ${var_file}`
-              done <${j}
-              
-              #for fname in ${j}
-              #do
-              #  echo ${fname}
-              #  var_file=`echo ${fname} | awk -F: '{print $2}'`
-              #  echo ${var_file}
-              #  export var_files=`echo ${var_files} ${var_file}`
-              #done
-              
+                            
               cd ${GITHUB_WORKSPACE}
               echo "working on tar creation for ${tar_name}..."
+            for rec in (seq 1 ${{steps.validate-ILs.outputs.il_cnt}})
+            do
               echo "var_files: ${var_files}"
-              tar -cvf ${tar_name} ${var_files}
+              tar -cvf ${tar_dir}/${{steps.validate-ILs.outputs.tar_${rec}_name}} ${{steps.validate-ILs.outputs.il_${rec}_files_list}}
               if [ $? -eq 0 ]; then
                 export builds=`echo ${builds} ${tar_name}`
               else
