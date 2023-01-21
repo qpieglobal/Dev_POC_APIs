@@ -64,11 +64,15 @@ jobs:
                 var_files=`echo ${var_files} ${var_file}`
               done <${il}
               
-              ### set output valiables for each IL file ####
-              echo il_cnt=`expr $il_cnt + 1` >> $GITHUB_OUTPUT
-              echo il_${il_cnt}_name=${il} >> $GITHUB_OUTPUT
-              echo tar_${il_cnt}_name=`echo ${il} | rev | awk -F/ '{print $1}' | rev | awk -F. '{print $1}'`.tar >> $GITHUB_OUTPUT
-              echo il_${il_cnt}_files_list=${var_files} >> $GITHUB_OUTPUT
+			  if [ `ls ~/tmp_il_vars.sh | wc -l` -gt 0 ]; then
+                 rm ~/tmp_il_vars.sh
+                fi
+			  
+              ### set env valiables for each IL file ####
+              echo export il_cnt=`expr $il_cnt + 1` >> ~/tmp_il_vars.sh
+              echo export il_${il_cnt}_name=${il} >> ~/tmp_il_vars.sh
+              echo export tar_${il_cnt}_name=`echo ${il} | rev | awk -F/ '{print $1}' | rev | awk -F. '{print $1}'`.tar >> ~/tmp_il_vars.sh
+              echo export il_${il_cnt}_files_list=${var_files} >> ~/tmp_il_vars.sh
               
              done
              echo "err: ${err}"
@@ -108,10 +112,11 @@ jobs:
                             
               cd ${GITHUB_WORKSPACE}
               echo "working on tar creation for ${tar_name}..."
-            for rec in (seq 1 ${{steps.validate-ILs.outputs.il_cnt}})
+			sh ~/tmp_il_vars.sh
+            for rec in (seq 1 ${il_cnt})
             do
               echo "var_files: ${var_files}"
-              tar -cvf ${tar_dir}/${{`echo steps.validate-ILs.outputs.tar_${rec}_name`}} ${{`echo steps.validate-ILs.outputs.il_${rec}_files_list`}}
+              tar -cvf ${tar_dir}/${tar_${rec}_name} ${il_${rec}_files_list}
               if [ $? -eq 0 ]; then
                 export builds=`echo ${builds} ${tar_name}`
               else
