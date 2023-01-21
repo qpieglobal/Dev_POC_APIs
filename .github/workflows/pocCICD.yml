@@ -66,13 +66,12 @@ jobs:
               il_cnt=`expr $il_cnt + 1`
               ### set output valiables for each IL file ####
               
-              echo il_${il_cnt}_name=${il} >> $GITHUB_OUTPUT
-              echo tar_${il_cnt}_name=`echo ${il} | rev | awk -F/ '{print $1}' | rev | awk -F. '{print $1}'`.tar >> $GITHUB_OUTPUT
-              echo il_${il_cnt}_files_list=${var_files} >> $GITHUB_OUTPUT
+              echo il_${il_cnt}_name=${il} > ~/temp_var.txt
+              echo tar_${il_cnt}_name=`echo ${il} | rev | awk -F/ '{print $1}' | rev | awk -F. '{print $1}'`.tar >> ~/temp_var.txt
+              echo il_${il_cnt}_files_list=${var_files} >> ~/temp_var.txt
               
              done
              echo il_cnt=${il_cnt} >> $GITHUB_OUTPUT
-             echo "tr_1_param=abc" > ~/temp_var.txt
              echo "err: ${err}"
              if [ "${err}" = "0" ]; then
                echo "IL validation completed successfully..."
@@ -115,12 +114,13 @@ jobs:
             for rec in `seq 1 ${{steps.validate-ILs.outputs.il_cnt}}`
             do
               echo "var_files: ${var_files}"
-              p1=steps.validate-ILs.outputs.tar_${rec}_name
-              p2=steps.validate-ILs.outputs.il_${rec}_files_list
-              eval "tr_param=\$\{\{$p1\}\}"
-              eval "files_param=\$\{\{$p2\}\}"
-              eval "tr_param2= $tr_param"
-              echo "tr_param2: $tr_param2"
+              
+              eval "`grep il_${rec}_name ~/temp_var.txt`"
+              eval "`grep tar_${rec}_name ~/temp_var.txt`"
+              eval "`grep il_${rec}_files_list ~/temp_var.txt`"
+              eval "echo il_${rec}_name: \${il_${rec}_name}"
+              eval "echo tar_${rec}_name: \${tar_${rec}_name}"
+              eval "echo il_${rec}_files_list: \${il_${rec}_files_list}"
               
               if [ $? -eq 0 ]; then
                 export builds=`echo ${builds} ${tar_name}`
