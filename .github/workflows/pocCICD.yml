@@ -130,8 +130,8 @@ jobs:
                 echo "Error while creating ${tar_name}"
                 exit 1
               fi
-             echo "tar_list=\"${tar_list} ${tar_dir}/\${tar_${rec}_name}\""
-              eval "tar_list=\"${tar_list} ${tar_dir}/\${tar_${rec}_name}\""
+             echo "tar_list=\"${tar_list} ${tar_dir}\/\${tar_${rec}_name}\""
+              eval "tar_list=\"${tar_list} ${tar_dir}\/\${tar_${rec}_name}\""
              done
              echo "Builds created successfully: ${builds}"
              ls -ltr ${tar_dir}
