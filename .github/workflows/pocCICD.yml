@@ -144,7 +144,7 @@ jobs:
              do
              if [ "${trec}" != "" ]; then
                echo copying ${trec} to EC2...
-               scp -i "${{ secrets.AWS_EC2_PEM_1 }}" ${trec} ec2-user@ec2-3-110-181-176.ap-south-1.compute.amazonaws.com:~/POC/
+               scp -i "${{ secrets.AWS_EC2_PEM_1 }}" ${trec} ${{ secrets.AWS_EC2_CONNECT_STRING }}:/home/ec2-user/POC/builds/
              fi
              done
              
