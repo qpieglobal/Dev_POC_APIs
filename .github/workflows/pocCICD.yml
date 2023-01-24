@@ -139,12 +139,12 @@ jobs:
              
              ##### Copying builds to EC2 server ########
              echo Copying builds to EC2 server.......
-             echo ${{ secrets.AWS_EC2_PEM_1 }} > ~/pem_file.pem
+             ##echo ${{ secrets.AWS_EC2_PEM_1 }} > ~/pem_file.pem
              for trec in ${tar_list}
              do
              if [ "${trec}" != "" ]; then
                echo copying ${trec} to EC2...
-               scp -i "~/pem_file.pem" ${trec} ec2-user@ec2-3-110-181-176.ap-south-1.compute.amazonaws.com:~/POC/
+               scp -i "${{ secrets.AWS_EC2_PEM_1 }}" ${trec} ec2-user@ec2-3-110-181-176.ap-south-1.compute.amazonaws.com:~/POC/
              fi
              done
              
