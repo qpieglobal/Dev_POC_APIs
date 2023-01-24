@@ -137,8 +137,9 @@ jobs:
              pwd
              ls -ltr ${tar_dir}
              
-             ##### Copying builds to EC2 server
-             echo ${{ secrets.AWS_EC2_PEM_1 }} >~/pem_file.pem
+             ##### Copying builds to EC2 server ########
+             echo Copying builds to EC2 server.......
+             echo ${{ secrets.AWS_EC2_PEM_1 }} > ~/pem_file.pem
              for trec in ${tar_list}
              do
              if [ "${trec}" != "" ]; then
