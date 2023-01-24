@@ -143,6 +143,8 @@ jobs:
               eval "tar_list=\"${tar_list} ${tar_dir}/\${tar_${rec}_name}\""
              done
              echo "Builds created successfully: ${builds}"
+             cd ${tar_dir}
+             chmod 777 *
              pwd
              ls -ltr ${tar_dir}
              
