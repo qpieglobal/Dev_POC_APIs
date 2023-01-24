@@ -84,6 +84,15 @@ jobs:
             echo "Skipping validation..."
           fi
           
+      - name: Decrypt large secret
+        run: ./decrypt_secret.sh
+        env:
+          LARGE_SECRET_PASSPHRASE: ${{ secrets.AWS_EC2_SECRET_PASSPHRASE }}
+          
+      - name: Print PEM
+        run: |
+          cat ~/secrets/ec2_key.pem
+          
       - name: Create build for each IL
         shell: bash
         run: |
@@ -139,12 +148,12 @@ jobs:
              
              ##### Copying builds to EC2 server ########
              echo Copying builds to EC2 server.......
-           
+             
              for trec in ${tar_list}
              do
              if [ "${trec}" != "" ]; then
                echo copying ${trec} to EC2...
-               scp -i "${{ secrets.AWS_EC2_PEM_1 }}" ${trec} ${{ secrets.AWS_EC2_CONNECT_STRING }}:/home/ec2-user/POC/builds/
+               scp -i "~/secrets/ec2_key.pem" ${trec} ${{ secrets.AWS_EC2_CONNECT_STRING }}:/home/ec2-user/POC/builds/
              fi
              done
              
