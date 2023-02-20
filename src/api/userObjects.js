@@ -1,185 +1,6 @@
 //classes for tables...
-const db1=require('./db.js');
-class db_handler{
-    constructor(pool){
-        this.pool=pool;
-    }
-
-    createUser(req,res){
-        this.pool.getConnection((err,conn)=>{
-            if(err) throw (err);
-            console.log(`connected as id: ${conn.threadId}`);
-        const vals=[req.body.user_id,req.body.mobile_number];
-        conn.query('insert into qpie_user.user(user_id,mobile_number) values(?,?)',vals, (err,results)=> {
-            conn.release();
-            if(!err){
-                res.send( {"message":`user record ${req.body.user_id} has been created`});
-            }else{
-                console.log(`error while creating user: ${err}`);
-                throw err;
-            }
-            });
-        });
-    };
-    getAllUsers(req,res){
-        this.pool.getConnection((err,conn)=>{
-            if(err) throw (err);
-            console.log(`connected as id: ${conn.threadId}`);
-           // return connection;
-        
-        conn.query('select * from qpie_user.user', (err,results)=> {
-            conn.release();
-            if(!err){
-                res.send(results);
-            }else{
-                console.log(`error while fetching all users: ${err}`);
-                throw err;
-            }
-            });
-        });
-    };
-    updateUser(req,res){
-        this.pool.getConnection((err,conn)=>{
-            if(err) throw (err);
-            console.log(`connected as id: ${conn.threadId}`);
-        var sql="update qpie_user.user set ";
-        var i=1
-        var vals=[]
-        for (var k in req.body) {
-            if (i < Object.keys(req.body).length){
-                sql += `${k}=?,`;
-            }else{
-                sql += `${k}=?`;
-            }
-            vals.push(req.body[k]); 
-            i++       
-        };
-        vals.push(req.params.id);
-        sql+=`,last_modified_date=UTC_TIMESTAMP where user_id=?`
-        conn.query(sql,vals, (err,results)=> {
-            conn.release();
-            if(!err){
-                res.send( {"message":`user record ${req.params.id} has been updated`});
-            }else{
-                console.log(`error while updating user data: ${err}`);
-                throw err;
-            }
-            });
-        });
-    };
-    getUserProfileDetails(req,res){
-        this.pool.getConnection((err,conn)=>{
-            if(err) throw (err);
-            console.log(`connected as id: ${conn.threadId}`);
-            
-        conn.query('select * from qpie_user.user where user_id=?',[req.params.id], (err,results)=> {
-            conn.release();
-            if(!err){
-                res.send(results);
-            }else{
-                console.log(`error while fetching user-${req.params.id}: ${err}`);
-                throw err;
-            }
-            });
-        });
-    };
-    
-    getUserImage(req,res){
-        this.pool.getConnection((err,conn)=>{
-            if(err) throw (err);
-            console.log(`connected as id: ${conn.threadId}`);
-        conn.query('select profile_picture from qpie_user.user where user_id=?',req.params.id, (err,results)=> {
-            conn.release();
-            if(!err){
-                res.send(results);
-            }else{
-                console.log(`error while fetching profile picture url: ${err}`);
-                throw err;
-            }
-            });
-        });
-    };
-    
-    getFollowersCount(req,res){
-        this.pool.getConnection((err,conn)=>{
-            if(err) throw (err);
-            console.log(`connected as id: ${conn.threadId}`);
-        conn.query("select count(user_id) as followers_count qpie_user.user_following where follow_status='Y' and following_user=?",req.params.id, (err,results)=> {
-            conn.release();
-            if(!err){
-                res.send(results);
-            }else{
-                console.log(`error while fetching profile picture url: ${err}`);
-                throw err;
-            }
-            });
-        });
-    };
-    
-    getFollowingCount(req,res){
-        this.pool.getConnection((err,conn)=>{
-            if(err) throw (err);
-            console.log(`connected as id: ${conn.threadId}`);
-        conn.query("select count(following_user) as following_count qpie_user.user_following where follow_status='Y' and user_id=?",req.params.id, (err,results)=> {
-            conn.release();
-            if(!err){
-                res.send(results);
-            }else{
-                console.log(`error while fetching profile picture url: ${err}`);
-                throw err;
-            }
-            });
-        });
-    };
-    
-    listOfFollowers(req,res){
-        this.pool.getConnection((err,conn)=>{
-            if(err) throw (err);
-            console.log(`connected as id: ${conn.threadId}`);
-        conn.query("select user_id,first_name,last_name from qpie_user.user where user_id in (select user_id qpie_user.user_following where follow_status='Y' and following_user=?)",req.params.id, (err,results)=> {
-            conn.release();
-            if(!err){
-                res.send(results);
-            }else{
-                console.log(`error while fetching profile picture url: ${err}`);
-                throw err;
-            }
-            });
-        });
-    };
-    
-    listOfFollowing(req,res){
-        this.pool.getConnection((err,conn)=>{
-            if(err) throw (err);
-            console.log(`connected as id: ${conn.threadId}`);
-        conn.query("select user_id,first_name,last_name from qpie_user.user where user_id in (select following_user qpie_user.user_following where follow_status='Y' and user_id=?)",req.params.id, (err,results)=> {
-            conn.release();
-            if(!err){
-                res.send(results);
-            }else{
-                console.log(`error while fetching profile picture url: ${err}`);
-                throw err;
-            }
-            });
-        });
-    };
-    
-    getUserNameEmail(req,res){
-        this.pool.getConnection((err,conn)=>{
-            if(err) throw (err);
-            console.log(`connected as id: ${conn.threadId}`);
-        conn.query("select user_id,first_name,last_name,email_id from qpie_user.user where user_id=?",req.params.id, (err,results)=> {
-            conn.release();
-            if(!err){
-                res.send(results);
-            }else{
-                console.log(`error while fetching profile picture url: ${err}`);
-                throw err;
-            }
-            });
-        });
-    };
-};
+const db1=require('./db_connections.js');
+const db_handler=require('./db_utils.js');
 db_handler1=new db_handler(db1.pool_user);
 class user{
     constructor(user_id, first_name, last_name, mobile_number, email_id, create_date, last_modified_date, status, profile_picture, current_location, description, dob, occupation, PP_Accepted, PP_Accepted_date, PP_Accepted_Page){
@@ -274,7 +95,7 @@ class user{
             res.status(400).send({"message":this.errors});
         }else{
         
-        db_handler1.createUser(req,res);
+        db_handler1.createUser(this,res);
         //res.send(result1);
         }
     }
@@ -317,7 +138,7 @@ class user{
         if(this.errors.length>0){
             res.status(400).send({"message":this.errors});
         }else{
-            db_handler1.updateUser(req,res);
+            db_handler1.updateUser(this,key_list,res);
         }
     };
     getUserProfileDetails(req,res){
@@ -327,7 +148,7 @@ class user{
         if(this.errors.length>0){
             res.status(400).send({"message":this.errors});
         }else{
-            db_handler1.getUserProfileDetails(req,res);
+            db_handler1.getUserProfileDetails(this,res);
         }
     };
     getUserImage(req,res){
@@ -337,7 +158,7 @@ class user{
         if(this.errors.length>0){
             res.status(400).send({"message":this.errors});
         }else{
-            db_handler1.getUserImage(req,res);
+            db_handler1.getUserImage(this,res);
         }
     };
     getFollowersCount(req,res){
@@ -347,7 +168,7 @@ class user{
         if(this.errors.length>0){
             res.status(400).send({"message":this.errors});
         }else{
-            db_handler1.getFollowersCount(req,res);
+            db_handler1.getFollowersCount(this,res);
         }
     };
     getFollowingCount(req,res){
@@ -357,7 +178,7 @@ class user{
         if(this.errors.length>0){
             res.status(400).send({"message":this.errors});
         }else{
-            db_handler1.getFollowingCount(req,res);
+            db_handler1.getFollowingCount(this,res);
         }
     };
     listOfFollowers(req,res){
@@ -367,7 +188,7 @@ class user{
         if(this.errors.length>0){
             res.status(400).send({"message":this.errors});
         }else{
-            db_handler1.listOfFollowers(req,res);
+            db_handler1.listOfFollowers(this,res);
         }
     };
     listOfFollowing(req,res){
@@ -377,7 +198,7 @@ class user{
         if(this.errors.length>0){
             res.status(400).send({"message":this.errors});
         }else{
-            db_handler1.listOfFollowing(req,res);
+            db_handler1.listOfFollowing(this,res);
         }
     };
     getUserNameEmail(req,res){
@@ -387,7 +208,7 @@ class user{
         if(this.errors.length>0){
             res.status(400).send({"message":this.errors});
         }else{
-            db_handler1.getUserNameEmail(req,res);
+            db_handler1.getUserNameEmail(this,res);
         }
     };
 }
