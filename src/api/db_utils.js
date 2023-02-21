@@ -44,15 +44,15 @@ class db_handler{
         var sql="update qpie_user.user set ";
         var i=1
         var vals=[]
-        console.log(keys_list)
-        console.log(Object.keys(user_obj))
+        //console.log(keys_list)
+        //console.log(Object.keys(user_obj))
         for (var k in keys_list) {
-            console.log(keys_list[k]);
-            if(Object.keys(user_obj).includes(keys_list[k])){
-                console.log(`field ${keys_list[k]} exists`);
-            }else{
-                console.log(`field ${keys_list[k]} does not exists`);
-            }
+            //console.log(keys_list[k]);
+            //if(Object.keys(user_obj).includes(keys_list[k])){
+            //    console.log(`field ${keys_list[k]} exists`);
+            //}else{
+            //    console.log(`field ${keys_list[k]} does not exists`);
+            //}
             if(Object.keys(user_obj).includes(keys_list[k])){
                 if (i < keys_list.length){
                     sql += `${keys_list[k]}=?,`;
