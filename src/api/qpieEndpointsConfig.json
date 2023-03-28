@@ -1,0 +1,52 @@
+
+{   "message":"define all api end points with class objects invoke methods. This file will be used for creation of the routes dynamically in the qpieApiMain.js file",
+    "endpoints": [
+      {
+        "path": "/user/:id",
+        "method": "get",
+        "handler": "userObjects.getUserProfileDetails"
+      },
+      {
+        "path": "/username-email/:id",
+        "method": "get",
+        "handler": "userObjects.getUserNameEmail"
+      },
+      {
+        "path": "/userimage/:id",
+        "method": "get",
+        "handler": "userObjects.getUserImage"
+      },
+      {
+        "path": "/user/:id",
+        "method": "put",
+        "handler": "userObjects.updateUser"
+      },
+      {
+        "path": "/createuser",
+        "method": "post",
+        "handler": "userObjects.createUser"
+      },
+      {
+        "path": "/updatecurrentlocation/:id",
+        "method": "post",
+        "handler": "locationTracking.updateCurrentLocation"
+      },
+      {
+        "path": "/nearestusersinperimeter/:id/:perimeter",
+        "method": "get",
+        "handler": "locationTracking.getAllNearestUsersInPerimeter"
+      },
+      {
+        "path": "/postquestion/:id",
+        "method": "post",
+        "handler": "questions.postQuestion"
+      },
+      {
+        "path": "/userfeedsbylocation/:id/:perimeter/",
+        "method": "get",
+        "handler": "questions.getUserFeedsByLocation"
+      }
+      
+    ]
+  }
+  

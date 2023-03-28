@@ -212,5 +212,5 @@ class user{
         }
     };
 }
-
-module.exports= user;
+//uo=
+module.exports= new user();

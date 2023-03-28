@@ -1,4 +1,7 @@
-//classes for tables...
+//DB handler object and methods for database operations.
+//only class name should be exported not the class object. 
+//Need to create an instance of the db_handler and pass the connectionpool object in the calling script.
+//all the methods uses the pool objects to make connection to the DB and schema to execute the called method.
 class db_handler{
     constructor(pool){
         this.pool=pool;
@@ -44,15 +47,7 @@ class db_handler{
         var sql="update qpie_user.user set ";
         var i=1
         var vals=[]
-        //console.log(keys_list)
-        //console.log(Object.keys(user_obj))
         for (var k in keys_list) {
-            //console.log(keys_list[k]);
-            //if(Object.keys(user_obj).includes(keys_list[k])){
-            //    console.log(`field ${keys_list[k]} exists`);
-            //}else{
-            //    console.log(`field ${keys_list[k]} does not exists`);
-            //}
             if(Object.keys(user_obj).includes(keys_list[k])){
                 if (i < keys_list.length){
                     sql += `${keys_list[k]}=?,`;
@@ -188,6 +183,121 @@ class db_handler{
             });
         });
     };
-};
 
+    updateCurrentLocation(lt_obj,res){
+        this.pool.getConnection((err,conn)=>{
+            if(err) throw (err);
+            console.log(`connected as id: ${conn.threadId}`);
+        const vals=[lt_obj.user_id,lt_obj.longitude,lt_obj.latitude,lt_obj.longitude,lt_obj.latitude];
+        conn.query(`insert into qpie_qa.location_tracking(user_id,longitude,latitude) values(?,?,?)
+                    on duplicate key update
+                    longitude=?,
+                    latitude=?,
+                    TRACKING_DATE=UTC_TIMESTAMP()`,vals, (err,results)=> {
+            conn.release();
+            if(!err){
+                res.send( {"message":`current location of user ${lt_obj.user_id} has been recorded`});
+            }else{
+                console.log(`error while recording user location: ${err}`);
+                throw err;
+            }
+            });
+        });
+    };
+    getAllNearestUsersInPerimeter(lt_obj,perimeter,res){
+        this.pool.getConnection((err,conn)=>{
+            if(err) throw (err);
+            console.log(`connected as id: ${conn.threadId}`);
+        conn.query(`SELECT p3.current_usr,p2.user_id as near_by_user,p3.point1,
+                          (3959 *
+                            acos(cos(radians(p3.latitude)) * 
+                            cos(radians(p2.latitude)) * 
+                            cos(radians(p2.longitude) - 
+                            radians(p3.longitude)) + 
+                            sin(radians(p3.latitude)) * 
+                            sin(radians(p2.latitude )))
+                          ) AS distance
+                              from qpie_qa.location_tracking p2 
+                              join  (select  p1.user_id current_usr,p1.longitude,p1.latitude 
+                                        from qpie_qa.location_tracking p1 where p1.user_id=?) p3
+                            HAVING distance<=?`,
+                    [lt_obj.user_id,perimeter], (err,results)=> {
+            conn.release();
+            if(!err){
+                res.send(results);
+            }else{
+                console.log(`error while fetching nearest users in the perimeter of ${perimeter} meters: ${err}`);
+                throw err;
+            }
+            });
+        });
+    };
+    postQuestion(qa_obj,res){
+        this.pool.getConnection((err,conn)=>{
+            if(err) throw (err);
+            console.log(`connected as id: ${conn.threadId}`);
+        var question_id
+        conn.query(`select concat('q',(UTC_TIMESTAMP()+0),substr(reverse(rand()),1,6)) as qid`,(err1,results1)=> {
+            if(!err1){
+                question_id=results1[0].qid;
+                console.log(`new question_id:${question_id}`);
+            }else{
+                console.log(`error while generating new questionid: ${err}`);
+                conn.release();
+                throw err1;
+            }
+            
+        const vals=[question_id,qa_obj.user_id,qa_obj.longitude,qa_obj.latitude,qa_obj.description,qa_obj.posted_anonymous,qa_obj.input_mode,qa_obj.attachment_urls,qa_obj.user_hashtags];
+        console.log(vals);
+        conn.query(`insert into qpie_qa.questions(question_id,
+                                                  user_id,
+                                                  longitude,
+                                                  latitude,
+                                                  description,
+                                                  posted_anonymous,
+                                                  input_mode,
+                                                  attachment_urls,
+                                                  user_hashtags) 
+                                          values(?,?,?,?,?,?,?,?,?)`,
+                                          vals, (err,results)=> {
+            conn.release();
+            if(!err){
+                res.send( {"message":"Question posted successfully","question_id":question_id});
+            }else{
+                console.log(`error while creating user: ${err}`);
+                throw err;
+            }
+            });
+        });});
+    };
+    getUserFeedsByLocation(qa_obj,perimeter,res){
+        this.pool.getConnection((err,conn)=>{
+            if(err) throw (err);
+            console.log(`connected as id: ${conn.threadId}`);
+        //This query finds the nearest users within given perimeter and fethes all questions posted by the nearest users
+        conn.query(`SELECT p2.*
+                      from qpie_qa.questions p2 
+                      join  (select  p1.user_id current_usr,p1.longitude,p1.latitude 
+                               from qpie_qa.location_tracking p1 where p1.user_id=?) p3
+                      WHERE (3959 *
+                            acos(cos(radians(p3.latitude)) * 
+                            cos(radians(p2.latitude)) * 
+                            cos(radians(p2.longitude) - 
+                            radians(p3.longitude)) + 
+                            sin(radians(p3.latitude)) * 
+                            sin(radians(p2.latitude )))
+                            )<=?`,
+                       [qa_obj.user_id,perimeter], (err,results)=> {
+            conn.release();
+            if(!err){
+                res.send(results);
+            }else{
+                console.log(`error while fetching user feeds by location: ${err}`);
+                throw err;
+            }
+            });
+        });
+    };
+};
+//only class name should be exported not the class object. 
 module.exports= db_handler;

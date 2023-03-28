@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "../../../Dev-Qpie-Database-Scripts"
+		},
+		{
+			"name": "Dev_POC_APIs",
+			"path": "../.."
+		}
+	],
+	"settings": {}
+}
